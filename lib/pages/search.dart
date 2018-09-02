@@ -10,7 +10,7 @@ import './book.dart';
 
 Future<List<Book>> fetchBooks(http.Client client) async {
   final response = await client
-      .get("https://desolate-depths-93559.herokuapp.com/api/bookInfo?q=${inputQuery}");
+      .get("https://desolate-depths-93559.herokuapp.com/api/bookInfo?q=bible");
   if (response.statusCode == 200) {
     print(response.body);
     return compute(parseBooks, response.body);
@@ -26,6 +26,10 @@ List<Book> parseBooks(String responseBody) {
 }
 
 class SearchPage extends StatefulWidget {
+  final String inputQuery;
+
+  SearchPage(this.inputQuery);
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -34,7 +38,6 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  String inputQuery = '';
   final String title = 'Search Results';
 
   @override
@@ -49,33 +52,34 @@ class _SearchPageState extends State<SearchPage> {
         body: Column(
           children: <Widget>[
             Container(
-                margin: EdgeInsets.all(30.0),
+                margin: EdgeInsets.symmetric(horizontal: 30.0),
                 padding: EdgeInsets.symmetric(horizontal: targetPadding / 2),
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 30.0),
+                      SizedBox(height: 20.0),
                       Row(
                         children: <Widget>[
                           Flexible(
                             child: TextField(
                               onChanged: (value) {
-                                setState(() {
-                                  inputQuery = value.toLowerCase();
-                                });
+                                // setState(() {
+                                //   widget.inputQuery = value;
+                                // });
                               },
                               decoration: InputDecoration(
+                                labelText: widget.inputQuery,
                                   helperText: "Search for a book by title"),
                             ),
                           ),
                           IconButton(
-                            tooltip: 'Search for a specific book',
-                            icon: Icon(Icons.search),
-                            onPressed: () {
-                            }
-                                
-                          ),
+                              tooltip: 'Search for a specific book',
+                              icon: Icon(Icons.search),
+                              onPressed: () {}),
                         ],
+                      ),
+                      SizedBox(
+                        height: 20.0,
                       )
                     ])),
             Expanded(
@@ -95,6 +99,8 @@ class _SearchPageState extends State<SearchPage> {
   }
 }
 
+// https://stackoverflow.com/questions/48081917/flutter-listview-not-scrollable-not-bouncing
+
 class BooksList extends StatelessWidget {
   final List<Book> books;
 
@@ -102,12 +108,17 @@ class BooksList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(books);
-
     return ListView.builder(
       itemCount: books.length,
+     // itemExtent: 152.0,
       itemBuilder: (context, index) {
         return GestureDetector(
+          child: Card(
+            child: ListTile(
+              leading: Image.network(books[index].images.smallThumbnail),
+              title: Text(books[index].title),
+            ),
+          ),
           onTap: () {
             Navigator.push(
                 context,
@@ -115,15 +126,6 @@ class BooksList extends StatelessWidget {
                   builder: (context) => BookPage(books[index]),
                 ));
           },
-          child: Column(
-            children: <Widget>[
-              ListTile(
-                title: Text(books[index].title),
-                // subtitle: Text(books[index].author.toString()),
-              ),
-              Image.network(books[index].images.smallThumbnail)
-            ],
-          ),
         );
       },
     );

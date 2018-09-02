@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './pages/search.dart';
+import './pages/home.dart';
 
 void main() => runApp(new MyApp());
 
@@ -10,7 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'Flutter Demo',
-      home: SearchPage(),
+      home: HomePage(),
     );
   }
 }
